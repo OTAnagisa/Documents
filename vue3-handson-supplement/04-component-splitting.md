@@ -361,6 +361,40 @@ withDefaults(defineProps<Props>(), {
   variant: 'default'
 })
 </script>
+
+<style scoped>
+.card {
+  border: 1px solid #ccc;
+  padding: 16px;
+  border-radius: 4px;
+  background: white;
+}
+
+.card-default {
+  border-color: #ccc;
+}
+
+.card-primary {
+  border-color: #1976d2;
+  background: #e3f2fd;
+}
+
+.card-success {
+  border-color: #388e3c;
+  background: #e8f5e9;
+}
+
+.card-header {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.card-footer {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #ccc;
+}
+</style>
 ```
 
 ### 2. スロットで内容をカスタマイズ可能にする

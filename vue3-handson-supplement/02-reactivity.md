@@ -227,6 +227,147 @@ const { count, name } = state
 console.log(state.count)
 ```
 
+## watch - データの変更を監視する
+
+`watch`を使うと、リアクティブなデータの変更を監視して、変更時に処理を実行できます。
+
+### 基本的な使い方
+
+```vue
+<template>
+  <div>
+    <input v-model="message" placeholder="メッセージを入力" />
+    <p>入力された文字数: {{ messageLength }}</p>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+
+const message = ref('')
+const messageLength = ref(0)
+
+// messageが変更されるたびに実行される
+watch(message, (newValue, oldValue) => {
+  messageLength.value = newValue.length
+  console.log(`メッセージが "${oldValue}" から "${newValue}" に変更されました`)
+})
+</script>
+```
+
+### 複数の値を監視する
+
+```typescript
+import { ref, watch } from 'vue'
+
+const firstName = ref('')
+const lastName = ref('')
+const fullName = ref('')
+
+// 複数の値を監視
+watch([firstName, lastName], ([newFirst, newLast]) => {
+  fullName.value = `${newFirst} ${newLast}`.trim()
+})
+```
+
+### 即座に実行する（immediate）
+
+`immediate: true`を指定すると、最初にも実行されます。
+
+```typescript
+watch(message, (newValue) => {
+  console.log(newValue)
+}, { immediate: true })
+```
+
+## ライフサイクルフック
+
+ライフサイクルフックは、コンポーネントの特定のタイミングで処理を実行するための関数です。
+
+### 主なライフサイクルフック
+
+| フック | タイミング | 用途 |
+|--------|-----------|------|
+| `onMounted` | コンポーネントがDOMにマウントされた後 | DOM操作、API呼び出し |
+| `onUpdated` | コンポーネントが更新された後 | 更新後の処理 |
+| `onUnmounted` | コンポーネントがアンマウントされる前 | クリーンアップ |
+| `onBeforeMount` | コンポーネントがマウントされる前 | マウント前の処理 |
+| `onBeforeUpdate` | コンポーネントが更新される前 | 更新前の処理 |
+| `onBeforeUnmount` | コンポーネントがアンマウントされる前 | クリーンアップ |
+
+### onMounted - マウント時に実行
+
+```vue
+<template>
+  <div>
+    <h1>ユーザー一覧</h1>
+    <ul v-if="users.length">
+      <li v-for="user in users" :key="user.id">{{ user.name }}</li>
+    </ul>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+
+const users = ref([])
+
+// コンポーネントが表示された後に実行される
+onMounted(async () => {
+  // APIからデータを取得
+  const response = await fetch('/api/users')
+  users.value = await response.json()
+})
+</script>
+```
+
+### onUnmounted - アンマウント時にクリーンアップ
+
+```vue
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
+
+let intervalId: number | null = null
+
+onMounted(() => {
+  // タイマーを開始
+  intervalId = window.setInterval(() => {
+    console.log('タイマー実行中')
+  }, 1000)
+})
+
+// コンポーネントが削除される前に実行される
+onUnmounted(() => {
+  // タイマーをクリーンアップ
+  if (intervalId !== null) {
+    clearInterval(intervalId)
+  }
+})
+</script>
+```
+
+### 複数のフックを組み合わせる
+
+```vue
+<script setup lang="ts">
+import { ref, onMounted, onUpdated, onUnmounted } from 'vue'
+
+const count = ref(0)
+
+onMounted(() => {
+  console.log('コンポーネントがマウントされました')
+})
+
+onUpdated(() => {
+  console.log(`カウントが更新されました: ${count.value}`)
+})
+
+onUnmounted(() => {
+  console.log('コンポーネントがアンマウントされました')
+})
+</script>
+```
+
 ## まとめ
 
 - **リアクティビティ**: データの変更が自動的に画面に反映される仕組み
@@ -234,9 +375,12 @@ console.log(state.count)
 - **reactive()**: オブジェクト全体をリアクティブにする
 - **テンプレート内**: 自動的にアンラップされるので`.value`不要
 - **スクリプト内**: `ref()`を使う場合は`.value`が必要
+- **watch**: データの変更を監視して処理を実行
+- **ライフサイクルフック**: コンポーネントの特定のタイミングで処理を実行
 
 ## 参考資料
 
 - [Vue.js - リアクティビティーの基礎](https://ja.vuejs.org/guide/essentials/reactivity-fundamentals)
-- [Vue.js - リアクティビティーの探求](https://ja.vuejs.org/guide/extras/reactivity-in-depth.html)
+- [Vue.js - ウォッチャー](https://ja.vuejs.org/guide/essentials/watchers.html)
+- [Vue.js - ライフサイクルフック](https://ja.vuejs.org/guide/essentials/lifecycle.html)
 

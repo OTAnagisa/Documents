@@ -107,177 +107,34 @@ export default {
 
 ## Storybookの基本的な使い方
 
-### Storyの作成
+### Storybookを開く
 
-Storyは、コンポーネントの特定の状態を表す設定です。
+Storybookを起動すると、ブラウザで `http://localhost:6006` が開きます。左サイドバーにコンポーネントの一覧が表示されます。
 
-```typescript
-// MyButton.stories.ts
-import type { Meta, StoryObj } from '@storybook/vue3'
-import MyButton from './MyButton.vue'
+### コンポーネントの確認
 
-// メタデータ（コンポーネントの情報）
-const meta: Meta<typeof MyButton> = {
-  title: 'Components/MyButton',
-  component: MyButton,
-  tags: ['autodocs'],
-  argTypes: {
-    variant: {
-      control: 'select',
-      options: ['primary', 'secondary']
-    }
-  }
-}
+1. **左サイドバーからコンポーネントを選択**: コンポーネント名をクリックすると、そのコンポーネントが表示されます
+2. **Storyを選択**: 同じコンポーネントでも、異なる状態（Story）を確認できます
+   - 例: Buttonコンポーネントの「Primary」「Secondary」「Disabled」など
 
-export default meta
-type Story = StoryObj<typeof MyButton>
+### コントロールパネルでPropsを変更
 
-// デフォルトのStory
-export const Default: Story = {
-  args: {
-    label: 'ボタン',
-    variant: 'primary'
-  }
-}
+画面下部のコントロールパネルで、コンポーネントのPropsの値を変更して、見た目や動作を確認できます。
 
-// セカンダリーバリアント
-export const Secondary: Story = {
-  args: {
-    label: 'セカンダリーボタン',
-    variant: 'secondary'
-  }
-}
-```
+- **Controlsタブ**: Propsの値を変更（テキスト入力、セレクトボックス、チェックボックスなど）
+- **Actionsタブ**: イベント（クリックなど）のログを確認
+- **Docsタブ**: コンポーネントの使い方やPropsの説明を確認
 
-### コンポーネントの表示
+### コードをコピー
 
-Storybookを起動すると、左サイドバーにStoryの一覧が表示されます。Storyを選択すると、そのコンポーネントが表示されます。
+Storybookでは、表示されているコンポーネントの使用例コードをコピーできます。コード例を確認して、実際のプロジェクトに貼り付けて使えます。
 
-### コントロールパネル
+### 実際の使用例
 
-画面下部のコントロールパネルで、Propsの値を変更できます。
-
-- **Controls**: Propsの値を変更
-- **Actions**: イベントのログを確認
-- **Docs**: ドキュメントを表示
-
-## 実践的な使用例
-
-### 例1: ボタンコンポーネント
-
-```vue
-<!-- Button.vue -->
-<template>
-  <button 
-    :class="['btn', `btn-${variant}`, { 'btn-disabled': disabled }]"
-    :disabled="disabled"
-    @click="$emit('click')"
-  >
-    {{ label }}
-  </button>
-</template>
-
-<script setup lang="ts">
-interface Props {
-  label: string
-  variant?: 'primary' | 'secondary' | 'danger'
-  disabled?: boolean
-}
-
-withDefaults(defineProps<Props>(), {
-  variant: 'primary',
-  disabled: false
-})
-
-defineEmits<{
-  click: []
-}>()
-</script>
-```
-
-```typescript
-// Button.stories.ts
-import type { Meta, StoryObj } from '@storybook/vue3'
-import Button from './Button.vue'
-
-const meta: Meta<typeof Button> = {
-  title: 'Components/Button',
-  component: Button,
-  argTypes: {
-    variant: {
-      control: 'select',
-      options: ['primary', 'secondary', 'danger']
-    },
-    disabled: {
-      control: 'boolean'
-    },
-    click: { action: 'clicked' }
-  }
-}
-
-export default meta
-type Story = StoryObj<typeof Button>
-
-export const Primary: Story = {
-  args: {
-    label: 'プライマリーボタン',
-    variant: 'primary'
-  }
-}
-
-export const Secondary: Story = {
-  args: {
-    label: 'セカンダリーボタン',
-    variant: 'secondary'
-  }
-}
-
-export const Disabled: Story = {
-  args: {
-    label: '無効なボタン',
-    disabled: true
-  }
-}
-```
-
-### 例2: フォームコンポーネント
-
-```typescript
-// FormField.stories.ts
-import type { Meta, StoryObj } from '@storybook/vue3'
-import { ref } from 'vue'
-import FormField from './FormField.vue'
-
-const meta: Meta<typeof FormField> = {
-  title: 'Components/FormField',
-  component: FormField
-}
-
-export default meta
-type Story = StoryObj<typeof FormField>
-
-export const TextInput: Story = {
-  render: () => ({
-    components: { FormField },
-    setup() {
-      const value = ref('')
-      return { value }
-    },
-    template: '<FormField v-model="value" label="名前" type="text" />'
-  })
-}
-
-export const EmailInput: Story = {
-  render: () => ({
-    components: { FormField },
-    setup() {
-      const value = ref('')
-      return { value }
-    },
-    template: '<FormField v-model="value" label="メールアドレス" type="email" />'
-  })
-}
-```
+1. 左サイドバーから「Button」コンポーネントを選択
+2. 「Primary」のStoryを選択
+3. コントロールパネルで「label」や「variant」の値を変更して、見た目の変化を確認
+4. コード例をコピーして、自分のプロジェクトで使用
 
 ## Storybookのメリット
 

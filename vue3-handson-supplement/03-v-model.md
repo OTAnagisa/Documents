@@ -187,32 +187,25 @@ const age = ref<number | string>('')
 
 ## カスタムコンポーネントでのv-model
 
-自分で作ったコンポーネントでも`v-model`を使えます。
+自分で作ったコンポーネントでも`v-model`を使えます。Vue 3.3以降では、`defineModel`を使うと簡単に実装できます。
 
-### 子コンポーネント（MyInput.vue）
+#### 子コンポーネント（MyInput.vue）
 
 ```vue
 <template>
   <input
-    :value="modelValue"
-    @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+    :value="model"
+    @input="model = ($event.target as HTMLInputElement).value"
   />
 </template>
 
 <script setup lang="ts">
-interface Props {
-  modelValue: string
-}
-
-defineProps<Props>()
-
-defineEmits<{
-  'update:modelValue': [value: string]
-}>()
+// defineModelを使うと、v-modelが自動的に機能します
+const model = defineModel<string>({ required: true })
 </script>
 ```
 
-### 親コンポーネント
+#### 親コンポーネント
 
 ```vue
 <template>
@@ -228,43 +221,51 @@ const message = ref('')
 </script>
 ```
 
-### 複数のv-model（Vue 3.3+）
+### 名前付きv-model
 
-Vue 3.3以降では、複数の`v-model`を使えます。
+1つのコンポーネントで複数の値を双方向バインドしたい場合、**名前付きv-model**を使います。
 
 ```vue
-<!-- 子コンポーネント -->
+<!-- 子コンポーネント（MyForm.vue） -->
 <template>
-  <input
-    :value="firstName"
-    @input="$emit('update:firstName', ($event.target as HTMLInputElement).value)"
-  />
-  <input
-    :value="lastName"
-    @input="$emit('update:lastName', ($event.target as HTMLInputElement).value)"
-  />
+  <div>
+    <input
+      :value="firstNameModel"
+      @input="firstNameModel = ($event.target as HTMLInputElement).value"
+      placeholder="名前"
+    />
+    <input
+      :value="lastNameModel"
+      @input="lastNameModel = ($event.target as HTMLInputElement).value"
+      placeholder="名字"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-interface Props {
-  firstName: string
-  lastName: string
-}
-
-defineProps<Props>()
-
-defineEmits<{
-  'update:firstName': [value: string]
-  'update:lastName': [value: string]
-}>()
+// 名前付きv-modelを定義
+const firstNameModel = defineModel<string>('firstName', { required: true })
+const lastNameModel = defineModel<string>('lastName', { required: true })
 </script>
 ```
 
 ```vue
 <!-- 親コンポーネント -->
 <template>
-  <MyForm v-model:firstName="first" v-model:lastName="last" />
+  <MyForm 
+    v-model:firstName="first" 
+    v-model:lastName="last" 
+  />
+  <p>フルネーム: {{ first }} {{ last }}</p>
 </template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import MyForm from './MyForm.vue'
+
+const first = ref('')
+const last = ref('')
+</script>
 ```
 
 ## フォーム送信の例
@@ -307,18 +308,134 @@ const handleSubmit = () => {
 </script>
 ```
 
-## v-modelとv-bindの違い
+## v-bind（:） - 単方向バインディング
 
-- **v-model**: 双方向バインディング（データ ↔ フォーム要素）
-- **v-bind（:）**: 単方向バインディング（データ → フォーム要素）
+`v-bind`（省略形は`:`）は、データを要素の属性やPropsに紐づけるためのディレクティブです。**単方向バインディング**で、データから要素への一方通行です。
+
+### 基本的な使い方
 
 ```vue
 <template>
-  <!-- v-model: 双方向 -->
+  <div>
+    <!-- v-bindの省略形 : を使う -->
+    <img :src="imageUrl" :alt="imageAlt" />
+    
+    <!-- v-bind を省略せずに書く場合 -->
+    <img v-bind:src="imageUrl" v-bind:alt="imageAlt" />
+    
+    <!-- クラスのバインド -->
+    <div :class="{ active: isActive }">コンテンツ</div>
+    
+    <!-- Propsに変数を渡す -->
+    <MyComponent :title="pageTitle" :count="itemCount" />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import MyComponent from './MyComponent.vue'
+
+const imageUrl = ref('/path/to/image.jpg')
+const imageAlt = ref('説明文')
+const isActive = ref(true)
+const pageTitle = ref('ページタイトル')
+const itemCount = ref(10)
+</script>
+```
+
+### オブジェクトで複数の属性をバインド
+
+```vue
+<template>
+  <div v-bind="attributes">
+    コンテンツ
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const attributes = ref({
+  id: 'my-div',
+  class: 'container',
+  'data-test': 'value'
+})
+</script>
+```
+
+## バインディングの種類
+
+### 双方向バインディング vs 単方向バインディング
+
+#### v-model（双方向バインディング）
+
+`v-model`は**双方向バインディング**で、データと要素の値が同期します。
+
+- **データ → 要素**: データが変わると要素の値も変わる
+- **要素 → データ**: 要素の値が変わるとデータも変わる
+
+```vue
+<template>
   <input v-model="text" />
-  
-  <!-- v-bind: 単方向（値の変更は反映されない） -->
+  <p>{{ text }}</p>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const text = ref('初期値')
+
+// データを変更すると、入力フィールドの値も変わる
+setTimeout(() => {
+  text.value = '変更後の値'
+}, 1000)
+</script>
+```
+
+#### v-bind（単方向バインディング）
+
+`v-bind`（`:`）は**単方向バインディング**で、データから要素への一方通行です。
+
+- **データ → 要素**: データが変わると要素の値も変わる
+- **要素 → データ**: 要素の値を変更してもデータは変わらない（フォーム要素の場合）
+
+```vue
+<template>
+  <!-- 入力フィールドの値は表示されるが、入力してもデータは更新されない -->
   <input :value="text" />
+  <p>{{ text }}</p>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const text = ref('初期値')
+
+// データを変更すると、入力フィールドの値は変わる
+setTimeout(() => {
+  text.value = '変更後の値'
+}, 1000)
+
+// ただし、ユーザーが入力フィールドに文字を入力しても、textの値は変わらない
+</script>
+```
+
+### 使い分け
+
+- **v-model**: フォーム要素（input、textarea、selectなど）で、ユーザーの入力を受け取りたい場合
+- **v-bind（:）**: Propsにデータを渡したり、属性の値を設定したりする場合
+
+```vue
+<template>
+  <!-- v-model: ユーザーの入力を取得したい -->
+  <input v-model="userInput" />
+  
+  <!-- v-bind: Propsや属性に値を設定する -->
+  <MyComponent 
+    :title="pageTitle" 
+    :user-name="userName"
+    :class="isActive ? 'active' : ''"
+  />
 </template>
 ```
 

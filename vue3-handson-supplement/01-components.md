@@ -55,19 +55,6 @@ const handleClick = () => {
 </style>
 ```
 
-## コンポーネントの種類
-
-### 1. 単一ファイルコンポーネント（SFC）
-
-上記の例のように、`.vue`ファイルにテンプレート、スクリプト、スタイルを全て含める形式です。Vue 3では最も一般的な形式です。
-
-### 2. グローバルコンポーネント vs ローカルコンポーネント
-
-- **グローバルコンポーネント**: アプリケーション全体で使えるコンポーネント
-- **ローカルコンポーネント**: 特定のコンポーネント内でのみ使えるコンポーネント
-
-通常は、必要な場所でのみインポートして使うローカルコンポーネントを使います。
-
 ## コンポーネントの使い方
 
 ### コンポーネントをインポートして使う
@@ -90,6 +77,8 @@ import MyCard from './components/MyCard.vue'
 
 親コンポーネントから子コンポーネントにデータを渡すには、**Props**を使います。
 
+#### 子コンポーネント（MyCard.vue）
+
 ```vue
 <!-- MyCard.vue -->
 <template>
@@ -110,23 +99,34 @@ const props = defineProps<Props>()
 </script>
 ```
 
-## コンポーネントの命名規則
+#### 親コンポーネントでPropsを渡す
 
-- **パスカルケース**: コンポーネント名は大文字で始める（例: `MyCard`, `UserProfile`）
-- **ファイル名**: コンポーネントファイルは通常、コンポーネント名と同じにする（例: `MyCard.vue`）
+```vue
+<!-- ParentComponent.vue -->
+<template>
+  <div>
+    <!-- Propsとしてデータを渡す -->
+    <MyCard 
+      title="商品名" 
+      description="商品の説明文です" 
+    />
+    
+    <!-- 変数を使って渡すことも可能 -->
+    <MyCard 
+      :title="productName" 
+      :description="productDescription" 
+    />
+  </div>
+</template>
 
-## 実際の例
+<script setup lang="ts">
+import { ref } from 'vue'
+import MyCard from './MyCard.vue'
 
-Webアプリケーションでは、以下のようなコンポーネントがよく作られます：
-
-- **Button**: ボタンコンポーネント
-- **Input**: 入力フィールドコンポーネント
-- **Card**: カードコンポーネント
-- **Modal**: モーダルダイアログコンポーネント
-- **Header**: ヘッダーコンポーネント
-- **Footer**: フッターコンポーネント
-
-これらを組み合わせることで、複雑なWebアプリケーションを構築できます。
+const productName = ref('ノートパソコン')
+const productDescription = ref('高性能なノートパソコンです')
+</script>
+```
 
 ## まとめ
 
