@@ -10,6 +10,7 @@
    - コンポーネントの基本概念
    - なぜコンポーネントを使うのか
    - Vueコンポーネントの構造
+   - PropsとEmits（コンポーネント間の通信）
 
 2. [Vueのリアクティビティ](./02-reactivity.md)
    - リアクティビティとは
@@ -22,31 +23,48 @@
    - フォーム要素との連携
    - カスタムコンポーネントでのv-model
 
+4. [条件付きレンダリングとリストレンダリング](./10-conditional-rendering.md)
+   - v-if、v-showの使い方
+   - v-forでリストを表示
+   - 条件に応じた表示
+
+5. [イベントハンドリング](./11-event-handling.md)
+   - @click、@inputなどのイベント
+   - イベント修飾子
+   - キー修飾子
+
+6. [算出プロパティとスロット](./12-computed-and-slots.md)
+   - computedの使い方
+   - スロットでコンテンツを渡す
+   - 名前付きスロット
+   - スコープ付きスロット
+   - defineSlots
+
 ### 実践的な開発
 
-4. [コンポーネント分割の考え方](./04-component-splitting.md)
+7. [コンポーネント分割の考え方](./04-component-splitting.md)
    - いつコンポーネントを分割するか
    - 分割のベストプラクティス
    - 再利用性を高める方法
 
-5. [Storybookについて](./05-storybook.md)
+8. [Storybookについて](./05-storybook.md)
    - Storybookとは
    - Storybookでできること
    - コンポーネントの確認とテスト
 
-6. [Vue Routerについて](./06-vue-router.md)
+9. [Vue Routerについて](./06-vue-router.md)
    - ルーティングの基本
    - ページ遷移の実装
    - ルートパラメータとクエリ
 
 ### UIとAPI
 
-7. [グリッドレイアウト（Vuetify）](./07-grid-layout.md)
+10. [グリッドレイアウト（Vuetify）](./07-grid-layout.md)
    - Vuetifyのグリッドシステム
    - レスポンシブデザイン
    - レイアウトの実装方法
 
-8. [AxiosとAPI通信](./08-api-communication.md)
+11. [AxiosとAPI通信](./08-api-communication.md)
    - Axiosとは
    - APIリクエストの送信
    - レスポンスの処理
